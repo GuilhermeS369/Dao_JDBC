@@ -1,5 +1,7 @@
 package model.dao;
 import java.util.List;
+
+import model.entities.Department;
 import model.entities.Seller;
 
 public interface SellerDao {
@@ -14,7 +16,8 @@ public interface SellerDao {
 		Seller findById(Integer id);
 		// OPERAÇÃO QUE RETORNA UMA LISTA DE TODOS OS DEPARTAMENTOS
 		List<Seller> findAll();
-	
+		// OPERAÇÃO QUE RETORNA UMA LISTA DE TODOS OS FUNCIONARIOS DE UM DEPARTAMENTO
+		List<Seller> findByDepartment(Department department);
 	
 	
 	

@@ -4,7 +4,10 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import db.DB;
 import db.DbException;
@@ -70,6 +73,52 @@ public class SellerDaoJDBC implements SellerDao{
 		// TODO Auto-generated method stub
 		return null;
 	}
+	
+	@Override
+	public List<Seller> findByDepartment(Department department) {
+		PreparedStatement st = null; //RECEBE O COMANDO
+		ResultSet rs = null; //LISTA O RETORNO
+		
+		try {
+			st = conn.prepareStatement(
+					"SELECT seller.*,department.Name as DepName "
+					+ "FROM seller INNER JOIN department "
+					+ "ON seller.DepartmentId = department.Id "
+					+ "WHERE DepartmentId = ? "
+					+ "ORDER BY Name");
+			
+				st.setInt(1, department.getId());
+				
+				rs = st.executeQuery();
+				
+				List<Seller> list = new ArrayList<>();
+				Map<Integer, Department> map = new HashMap<>();
+				
+				while (rs.next()) {
+					//AQUI BUSCO DENTRO DO MEU MAP SE EXISTE O MESMO ID
+					//Q ESTA NO DepartmentId, CASO NÃO TENHA, A VARIAVEL DEP VAI SER NULL
+					Department dep = map.get(rs.getInt("DepartmentId"));
+					// CASO SEJA NULO, ELE INSTANCIA E INSERE NO MAP ID E O DEPARTAMENTO
+					if (dep == null) {
+					dep = instantiateDepartment(rs);
+					map.put(rs.getInt("DepartmentId"), dep);
+					}
+				
+					Seller obj = instantiateSeller(rs, dep);
+					list.add(obj);
+			}
+				return list;
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			DB.closeResultSet(rs);
+		}
+		
+	}
+	
 	//FUNÇÕES Q INICIA UM TIPO SELLER E JA RETORNA COM OS DADOS DO BANCO DE DADOS
 	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException{
 		
@@ -91,6 +140,8 @@ public class SellerDaoJDBC implements SellerDao{
 		return dep;
 		
 	}
+
+	
 
 }
 
