@@ -15,7 +15,7 @@ import model.entities.Seller;
 public class SellerDaoJDBC implements SellerDao{
 	
 	private Connection conn;
-	
+	// POR AQUI PASSA OQ VEM DA FACTORY Q É A CONEXÃO
 	public SellerDaoJDBC(Connection conn) {
 		this.conn = conn;
 	}
@@ -34,13 +34,10 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public void deleteById(Integer id) {
-		// TODO Auto-generated method stub
-		
 	}
 
 	@Override
 	public Seller findById(Integer id) {
-		
 		PreparedStatement st = null; //RECEBE O COMANDO
 		ResultSet rs = null; //LISTA O RETORNO
 		
@@ -52,25 +49,11 @@ public class SellerDaoJDBC implements SellerDao{
 					+"WHERE seller.Id = ?");
 				st.setInt(1, id);
 				rs = st.executeQuery();
-				
 				if (rs.next()) {
-					
-					Department dep = new Department();
-					dep.setId(rs.getInt("DepartmentId"));
-					dep.setName(rs.getString("DepName"));
-					
-					Seller obj = new Seller();
-					obj.setId(rs.getInt("Id"));
-					obj.setName(rs.getString("Name"));
-					obj.setEmail(rs.getString("Email"));
-					obj.setBirthDate(rs.getDate("BirthDate"));
-					obj.setBaseSalary(rs.getDouble("BaseSalary"));
-					obj.setDepartment(dep);
+					Department dep = instantiateDepartment(rs);
+					Seller obj = instantiateSeller(rs, dep);
 					return obj;
-					
-					
-				}
-		
+			}
 				return null;
 		}
 		catch(SQLException e) {
@@ -80,13 +63,36 @@ public class SellerDaoJDBC implements SellerDao{
 			DB.closeStatement(st);
 			DB.closeResultSet(rs);
 		}
-		
 	}
-
+	
 	@Override
 	public List<Seller> findAll() {
 		// TODO Auto-generated method stub
 		return null;
 	}
+	//FUNÇÕES Q INICIA UM TIPO SELLER E JA RETORNA COM OS DADOS DO BANCO DE DADOS
+	private Seller instantiateSeller(ResultSet rs, Department dep) throws SQLException{
+		
+		Seller obj = new Seller();
+		obj.setId(rs.getInt("Id"));
+		obj.setName(rs.getString("Name"));
+		obj.setEmail(rs.getString("Email"));
+		obj.setBirthDate(rs.getDate("BirthDate"));
+		obj.setBaseSalary(rs.getDouble("BaseSalary"));
+		obj.setDepartment(dep);
+		return obj;
+		
+	}
+	//FUNÇÃO Q INICIA UM TIPO DEPARTAMENTO E O RETORNA JA COM OS DADOS DO BANCO
+	private Department instantiateDepartment(ResultSet rs) throws SQLException {
+		Department dep = new Department();
+		dep.setId(rs.getInt("DepartmentId"));
+		dep.setName(rs.getString("DepName"));
+		return dep;
+		
+	}
 
 }
+
+	
+

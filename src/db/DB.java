@@ -50,7 +50,7 @@ public class DB {
 		try (FileInputStream fs = new FileInputStream("db.properties")){
 			Properties props = new Properties();
 			props.load(fs);
-			//O COMANDO LOAD FAZ ALEITURA DO ARQUIVO APONTADO PELA NOVA INSTANCIA ACIMA
+			//O COMANDO LOAD FAZ A LEITURA DO ARQUIVO APONTADO PELA NOVA INSTANCIA ACIMA
 			//GUARDA DENTRO DO PROPS
 			return props;
 		}
