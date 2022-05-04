@@ -1,14 +1,15 @@
 package model.dao.imlp;
 
 import java.sql.Connection;
+import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
 import db.DB;
 import db.DbException;
 import model.dao.SellerDao;
@@ -25,8 +26,49 @@ public class SellerDaoJDBC implements SellerDao{
 
 	@Override
 	public void insert(Seller obj) {
-		// TODO Auto-generated method stub
-		
+		PreparedStatement st = null; //RECEBE O COMANDO
+			
+		try { //PREPARA A QUERY COM RETORNO DE UM NUMERO
+			st = conn.prepareStatement(
+					"INSERT INTO seller "
+					+ "(Name, Email, BirthDate, BaseSalary, DepartmentId) "
+					+ "VALUES "
+					+ "(?, ?, ?, ?, ?)", 
+					Statement.RETURN_GENERATED_KEYS);
+			Department dep = obj.getDepartment();	
+			// CHAMA O DEPARTAMENTO DO OBJETO
+			// A DATA AQUI PRECISA SER DO JAVA.SQL
+			st.setString(1, obj.getName());
+			st.setString(2, obj.getEmail());
+			st.setDate(3, new java.sql.Date(obj.getBirthDate().getTime()));	
+			st.setDouble(4, obj.getBaseSalary());
+			st.setInt(5, dep.getId());
+			//RETORNA AS LINHAS AFETAS
+			int rowsAffected = st.executeUpdate();
+			
+			//SE FOR MAIOR QUE 0, ENTAO ELE PUXA AS CHAVES E ATRIBUI NA LISTA RS
+			if(rowsAffected > 0) {
+				ResultSet rs = st.getGeneratedKeys();
+				//SE HOUVER ALGO NA PROXIMA LINHA, ENTAO ELE SETA O ID DO OBJETO SELLER CO MO PROXIMO ID				
+				if(rs.next()){
+					int id = rs.getInt(1);
+					obj.setId(id);
+					
+				}
+
+				DB.closeResultSet(rs);
+			}// SE NAO, DEU RUIM E PRECISA LANÇAR A EXCEÇÃO
+			else {
+				throw new DbException("ERRO INESPERADO, NENHUMA LINHA AFETADA");
+			}
+		}
+		catch(SQLException e) {
+			throw new DbException(e.getMessage());
+		}
+		finally {
+			DB.closeStatement(st);
+			
+		}
 	}
 
 	@Override
