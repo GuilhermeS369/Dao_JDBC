@@ -37,5 +37,6 @@ public class Program2 {
 		for(Department d : listDep) {
 		System.out.println(d);
 		}
+		sc.close();
 	}
 }		
