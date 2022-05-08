@@ -15,7 +15,7 @@ public class Program2 {
 		
 		System.out.println("=== TESTE 1: INSERT ====");
 		Department dep1 = new Department(null, "Biju");
-		//departmentDao.insert(dep1);
+		departmentDao.insert(dep1);
 		System.out.println("INSERIDO COM SUCESSO");
 		
 		System.out.println("=== TESTE 2: findById ====");
@@ -28,8 +28,8 @@ public class Program2 {
 		
 		System.out.println("=== TESTE 4: DELETE ====");
 		System.out.println("DIGITE UM ID PARA DELETAR: ");
-		//int x = sc.nextInt();
-		//departmentDao.deleteById(x);
+		int x = sc.nextInt();
+		departmentDao.deleteById(x);
 		System.out.println("DELETADO COM SUCESSO");
 		
 		System.out.println("=== TESTE 5: findAll ====");
